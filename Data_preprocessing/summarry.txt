@@ -1,0 +1,9 @@
+
+Median seizure duration: 33.00 seconds
+Average seizure duration: 58.37 seconds
+
+Total seizure events: 886
+Total non-seizure events: 2778
+
+Seizure accepted: 23/25
+Non-seizure accepted: 11/42
