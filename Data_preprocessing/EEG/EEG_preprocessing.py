@@ -102,11 +102,11 @@ for edf_path in edf_files:
         if len(ep_nsz) > 0:
             nonseizure_epochs_list.append(ep_nsz)
 
-# Summary
+
 print(f"Seizure accepted: {total_seizure_accepted}/{total_seizure_attempted}")
 print(f"Non-seizure accepted: {total_nonseizure_accepted}/{total_nonseizure_attempted}")
 
-# Save concatenated epochs if available
+
 if seizure_epochs_list:
     all_sz = mne.concatenate_epochs(seizure_epochs_list)
     all_sz.save(os.path.join(base_path, 'combined_seizure_epochs-epo.fif'), overwrite=True)
