@@ -1,0 +1,13 @@
+2025-05-09 13:03:07,990 - INFO - __main__ - EEG_preprocessing - main - === EEG Preprocessing Script Started (v3 - User's Original Glob Pattern) ===
+2025-05-09 13:03:07,991 - INFO - __main__ - EEG_preprocessing - main - Using BASE_DATA_PATH: /Users/jananjahed/Desktop/Bachelor's project/ds005873
+2025-05-09 13:03:07,991 - INFO - __main__ - EEG_preprocessing - main - Using PREPROCESSED_OUTPUT_PATH: /Users/jananjahed/Desktop/Bachelor's project/eeg
+2025-05-09 13:03:07,991 - INFO - __main__ - EEG_preprocessing - main - Attempting to find files with user's original glob pattern: /Users/jananjahed/Desktop/Bachelor's project/ds005873/sub-00[1-125]/ses-*/eeg/*_eeg.edf
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - CRITICAL: No EEG EDF files found using the user's original pattern: /Users/jananjahed/Desktop/Bachelor's project/ds005873/sub-00[1-125]/ses-*/eeg/*_eeg.edf
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - This pattern 'sub-00[1-125]' is not standard for numerical ranges in glob.
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - It matches 'sub-00' followed by a character '1', '-', '2', or '5'.
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - Please verify:
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - 1. If BASE_DATA_PATH '/Users/jananjahed/Desktop/Bachelor's project/ds005873' is correct.
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - 2. The exact naming convention of your subject folders (e.g., 'sub-001', 'sub-002', etc.).
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main -    If subject folders are indeed named like 'sub-001', 'sub-002', 'sub-003', 'sub-004', 'sub-005', this pattern might partially work.
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main -    For a broader match like 'sub-001' through 'sub-125', a pattern like 'sub-00[1-9]/...' or 'sub-0[1-9][0-9]/...' or 'sub-1[0-2][0-5]/...' combined or a more general 'sub-*/' would be more robust if subject names are strictly 'sub-XXX'.
+2025-05-09 13:03:07,991 - ERROR - __main__ - EEG_preprocessing - main - Script will now exit as no files were found.

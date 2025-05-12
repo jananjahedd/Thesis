@@ -1,0 +1,153 @@
+2025-03-31 15:26:22,732 - INFO - Found 84 EDF files for the first 8 subjects.
+2025-03-31 15:26:22,732 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:26:27,306 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-05_eeg.edf: 2
+2025-03-31 15:26:30,226 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:26:30,348 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:26:32,641 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-06_eeg.edf: 3
+2025-03-31 15:26:33,982 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:26:34,159 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-12_eeg.edf
+2025-03-31 15:26:34,483 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:26:34,812 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-02_eeg.edf: 2
+2025-03-31 15:26:35,958 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:26:36,587 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-03_eeg.edf: 1
+2025-03-31 15:26:37,184 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-11_eeg.edf
+2025-03-31 15:26:37,372 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:26:37,475 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-01_eeg.edf: 2
+2025-03-31 15:26:37,966 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:26:38,562 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:26:38,861 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-09_eeg.edf: 4
+2025-03-31 15:26:39,358 - INFO - Processing: sub-002_ses-01_task-szMonitoring_run-10_eeg.edf
+2025-03-31 15:26:39,441 - INFO - Seizure epochs dropped in sub-002_ses-01_task-szMonitoring_run-10_eeg.edf: 1
+2025-03-31 15:26:39,936 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-16_eeg.edf
+2025-03-31 15:26:39,969 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:26:40,089 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-20_eeg.edf
+2025-03-31 15:26:40,148 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-21_eeg.edf
+2025-03-31 15:26:40,207 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:26:40,313 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-17_eeg.edf
+2025-03-31 15:26:40,403 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-23_eeg.edf
+2025-03-31 15:26:40,750 - INFO - Seizure epochs dropped in sub-005_ses-01_task-szMonitoring_run-23_eeg.edf: 1
+2025-03-31 15:26:41,210 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-15_eeg.edf
+2025-03-31 15:26:41,237 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:26:41,482 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:26:41,559 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-14_eeg.edf
+2025-03-31 15:26:41,584 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-22_eeg.edf
+2025-03-31 15:26:41,672 - INFO - Seizure epochs dropped in sub-005_ses-01_task-szMonitoring_run-22_eeg.edf: 1
+2025-03-31 15:26:42,127 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:26:42,301 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-18_eeg.edf
+2025-03-31 15:26:42,996 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-11_eeg.edf
+2025-03-31 15:26:43,216 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:26:43,920 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-10_eeg.edf
+2025-03-31 15:26:44,010 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-19_eeg.edf
+2025-03-31 15:26:44,440 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:26:44,527 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-26_eeg.edf
+2025-03-31 15:26:44,704 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-12_eeg.edf
+2025-03-31 15:26:45,157 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:26:45,202 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-24_eeg.edf
+2025-03-31 15:26:45,268 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-25_eeg.edf
+2025-03-31 15:26:45,287 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:26:45,373 - INFO - Processing: sub-005_ses-01_task-szMonitoring_run-13_eeg.edf
+2025-03-31 15:26:45,424 - INFO - Processing: sub-004_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:26:46,086 - INFO - Seizure epochs dropped in sub-004_ses-01_task-szMonitoring_run-01_eeg.edf: 4
+2025-03-31 15:26:51,384 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:26:51,518 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-05_eeg.edf; skipping.
+2025-03-31 15:26:51,518 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:26:52,312 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-04_eeg.edf; skipping.
+2025-03-31 15:26:52,312 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:26:53,086 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-06_eeg.edf; skipping.
+2025-03-31 15:26:53,086 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:26:53,172 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-07_eeg.edf; skipping.
+2025-03-31 15:26:53,172 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:26:53,274 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-02_eeg.edf; skipping.
+2025-03-31 15:26:53,274 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:26:53,381 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-03_eeg.edf; skipping.
+2025-03-31 15:26:53,381 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:26:54,219 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-08_eeg.edf; skipping.
+2025-03-31 15:26:54,219 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:26:54,903 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-01_eeg.edf; skipping.
+2025-03-31 15:26:54,903 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-10_eeg.edf
+2025-03-31 15:26:55,678 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-10_eeg.edf; skipping.
+2025-03-31 15:26:55,678 - INFO - Processing: sub-003_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:26:55,763 - WARNING - Missing required channels in sub-003_ses-01_task-szMonitoring_run-09_eeg.edf; skipping.
+2025-03-31 15:26:55,763 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:26:55,924 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:26:56,475 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:26:57,202 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:26:57,359 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-10_eeg.edf
+2025-03-31 15:26:58,029 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:26:58,191 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:26:58,757 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:26:59,079 - INFO - Seizure epochs dropped in sub-006_ses-01_task-szMonitoring_run-01_eeg.edf: 1
+2025-03-31 15:26:59,611 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:26:59,786 - INFO - Processing: sub-006_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:27:00,063 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:27:00,236 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:27:00,937 - INFO - Seizure epochs dropped in sub-001_ses-01_task-szMonitoring_run-05_eeg.edf: 1
+2025-03-31 15:27:01,352 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:27:01,714 - INFO - Seizure epochs dropped in sub-001_ses-01_task-szMonitoring_run-07_eeg.edf: 1
+2025-03-31 15:27:02,151 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:27:02,322 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:27:02,984 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:27:03,162 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:27:03,608 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:27:04,338 - INFO - Processing: sub-001_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:27:04,937 - INFO - Seizure epochs dropped in sub-001_ses-01_task-szMonitoring_run-08_eeg.edf: 1
+2025-03-31 15:27:05,340 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-07_eeg.edf
+2025-03-31 15:27:05,435 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-07_eeg.edf; skipping.
+2025-03-31 15:27:05,435 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-06_eeg.edf
+2025-03-31 15:27:06,032 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-06_eeg.edf; skipping.
+2025-03-31 15:27:06,032 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:27:06,772 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-04_eeg.edf; skipping.
+2025-03-31 15:27:06,772 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:27:06,862 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-05_eeg.edf; skipping.
+2025-03-31 15:27:06,862 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-10_eeg.edf
+2025-03-31 15:27:06,905 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-10_eeg.edf; skipping.
+2025-03-31 15:27:06,905 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-09_eeg.edf
+2025-03-31 15:27:06,960 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-09_eeg.edf; skipping.
+2025-03-31 15:27:06,960 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-08_eeg.edf
+2025-03-31 15:27:07,685 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-08_eeg.edf; skipping.
+2025-03-31 15:27:07,685 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:27:07,775 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-01_eeg.edf; skipping.
+2025-03-31 15:27:07,775 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-11_eeg.edf
+2025-03-31 15:27:08,379 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-11_eeg.edf; skipping.
+2025-03-31 15:27:08,380 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:27:08,483 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-03_eeg.edf; skipping.
+2025-03-31 15:27:08,483 - INFO - Processing: sub-008_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:27:08,964 - WARNING - Missing required channels in sub-008_ses-01_task-szMonitoring_run-02_eeg.edf; skipping.
+2025-03-31 15:27:08,965 - INFO - Processing: sub-007_ses-01_task-szMonitoring_run-04_eeg.edf
+2025-03-31 15:27:09,088 - WARNING - Missing required channels in sub-007_ses-01_task-szMonitoring_run-04_eeg.edf; skipping.
+2025-03-31 15:27:09,088 - INFO - Processing: sub-007_ses-01_task-szMonitoring_run-05_eeg.edf
+2025-03-31 15:27:09,727 - WARNING - Missing required channels in sub-007_ses-01_task-szMonitoring_run-05_eeg.edf; skipping.
+2025-03-31 15:27:09,727 - INFO - Processing: sub-007_ses-01_task-szMonitoring_run-01_eeg.edf
+2025-03-31 15:27:10,362 - WARNING - Missing required channels in sub-007_ses-01_task-szMonitoring_run-01_eeg.edf; skipping.
+2025-03-31 15:27:10,362 - INFO - Processing: sub-007_ses-01_task-szMonitoring_run-03_eeg.edf
+2025-03-31 15:27:10,933 - WARNING - Missing required channels in sub-007_ses-01_task-szMonitoring_run-03_eeg.edf; skipping.
+2025-03-31 15:27:10,933 - INFO - Processing: sub-007_ses-01_task-szMonitoring_run-02_eeg.edf
+2025-03-31 15:27:11,049 - WARNING - Missing required channels in sub-007_ses-01_task-szMonitoring_run-02_eeg.edf; skipping.
+2025-03-31 15:27:11,057 - INFO - Seizure frequencies: 
+12.0     1
+20.0     1
+25.0     1
+42.0     1
+52.0     1
+56.0     1
+59.0     1
+64.0     1
+72.0     1
+81.0     2
+85.0     1
+100.0    1
+106.0    1
+112.0    1
+118.0    1
+143.0    1
+151.0    1
+153.0    1
+154.0    1
+156.0    1
+161.0    1
+180.0    2
+181.0    1
+228.0    1
+Name: count, dtype: int64
+2025-03-31 15:27:11,057 - INFO - Minimum seizure duration: 12.0s
+2025-03-31 15:27:11,057 - INFO - Seizures under 20s: 1 out of 26

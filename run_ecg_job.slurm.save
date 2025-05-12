@@ -1,0 +1,21 @@
+
+#!/bin/bash
+#SBATCH --job-name=ecg-preprocessing
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:a100:2
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --time=02:00:00
+#SBATCH --output=ecg_preprocessing_%j.out
+#SBATCH --error=ecg_preprocessing_%j.err
+
+# Load modules
+module load Anaconda3
+conda activate ecg-env
+
+# Run your script
+python /scratch/s5107318/BP/Data_preprocessing/ECG/ECG_preprocessing.py
+
+
