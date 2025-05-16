@@ -21,9 +21,7 @@ import matplotlib.pyplot as plt
 LOG_FILE = 'training_log.txt'
 sys.stdout = open(LOG_FILE, 'w')
 
-# -------------------------------
-# 1) GPU / Mixed-Precision Setup
-# -------------------------------
+
 print("=== GPU / Mixed-Precision Setup ===")
 gpus = tf.config.list_physical_devices('GPU')
 if gpus:
@@ -38,9 +36,7 @@ else:
     print("No GPU found; using CPU.")
     strategy = tf.distribute.get_strategy()
 
-# -------------------------------
-# 2) Model Definition
-# -------------------------------
+
 def create_model(input_shape_eeg, input_shape_ecg, use_ecg=True):
     with strategy.scope():
         input_eeg = Input(shape=input_shape_eeg, name='eeg_input')
@@ -76,18 +72,16 @@ def create_model(input_shape_eeg, input_shape_ecg, use_ecg=True):
         )
     return model
 
-# -------------------------------
-# 3) Training Utilities
-# -------------------------------
+
 def plot_history(history, fold):
     plt.figure(figsize=(12, 5))
-    # Accuracy
+    
     plt.subplot(1, 2, 1)
     plt.plot(history.history['accuracy'], label='Train Acc')
     plt.plot(history.history['val_accuracy'], label='Val Acc')
     plt.title(f'Fold {fold+1} Accuracy')
     plt.xlabel('Epoch'); plt.ylabel('Accuracy'); plt.legend()
-    # Loss
+    
     plt.subplot(1, 2, 2)
     plt.plot(history.history['loss'], label='Train Loss')
     plt.plot(history.history['val_loss'], label='Val Loss')
@@ -105,11 +99,11 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(Xeeg, y, groups)):
         print(f"\n--- Fold {fold+1}/{num_folds} ---")
-        # Slice
+        
         Xeeg_tr, Xeeg_val = Xeeg[train_idx], Xeeg[val_idx]
         y_tr, y_val       = y[train_idx], y[val_idx]
 
-        # Transpose to (batch, time, channels)
+        
         Xeeg_tr = Xeeg_tr.transpose(0, 2, 1)
         Xeeg_val = Xeeg_val.transpose(0, 2, 1)
         seq_len, n_chan_eeg = Xeeg_tr.shape[1], Xeeg_tr.shape[2]
@@ -119,7 +113,7 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
             Xecg_val = Xecg[val_idx].transpose(0, 2, 1)
             _, n_chan_ecg = Xecg_tr.shape[1], Xecg_tr.shape[2]
 
-        # Scale per‐channel: flatten (samples*time, channels), scale, reshape back
+        
         print("Scaling EEG data...")
         scaler = StandardScaler()
         flat = Xeeg_tr.reshape(-1, n_chan_eeg)
@@ -141,7 +135,7 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
             flat_ecg_val = scaler_ecg.transform(flat_ecg_val)
             Xecg_val = flat_ecg_val.reshape(len(val_idx), seq_len, n_chan_ecg)
 
-        # Build model
+       
         print("Building model...")
         model = create_model(
             input_shape_eeg=(seq_len, n_chan_eeg),
@@ -149,13 +143,13 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
             use_ecg=use_ecg
         )
 
-        # Callbacks
+        
         cb = [
             EarlyStopping(patience=10, restore_best_weights=True),
             ReduceLROnPlateau(factor=0.5, patience=5)
         ]
 
-        # Fit
+        
         print("Training...")
         if use_ecg:
             history = model.fit(
@@ -170,7 +164,7 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
                 epochs=50, batch_size=32, callbacks=cb, verbose=1
             )
 
-        # Evaluate
+        
         print("Evaluating...")
         preds = model.predict([Xeeg_val, Xecg_val] if use_ecg else Xeeg_val)
         pred_classes = np.argmax(preds, axis=1)
@@ -182,25 +176,23 @@ def train_and_evaluate(Xeeg, Xecg, y, groups, use_ecg=True, num_folds=5):
         }
         print(f"Fold {fold+1} metrics: {metrics}")
         if metrics['accuracy'] > 0.99:
-            print("⚠️ Possible overfitting or leakage detected!")
+            print("Possible overfitting or leakage detected!")
         all_metrics.append(metrics)
 
         plot_history(history, fold)
 
-        # Cleanup
+        
         tf.keras.backend.clear_session()
         del model, Xeeg_tr, Xeeg_val, y_tr, y_val, preds
         if use_ecg:
             del Xecg_tr, Xecg_val
         gc.collect()
 
-    # Aggregate
+  
     avg = {k: np.mean([m[k] for m in all_metrics]) for k in all_metrics[0]}
     print(f"\nAverage across folds: {avg}")
 
-# -------------------------------
-# 4) Main Execution
-# -------------------------------
+
 if __name__ == '__main__':
     print("=== Loading data ===")
     Xeeg = np.nan_to_num(np.load('/Users/jananjahed/Desktop/BP/ds005873/dl_ready/Xeeg.npy'))
