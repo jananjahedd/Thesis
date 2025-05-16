@@ -1,234 +1,368 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import numpy as np
 import pandas as pd
 import mne
 import gc
-from tqdm import tqdm
-import time
+import logging
 
 np.random.seed(42)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--base', default="/scratch/s5107318/BP/ds005873")
-parser.add_argument('--ratio', type=float, default=1.0,
-                   help='target minority/majority size (<=1)')
-parser.add_argument('--no-ecg', action='store_true', help='ignore ECG modality')
-parser.add_argument('--outdir', default='dl_ready')
-parser.add_argument('--batch-size', type=int, default=50,
-                   help='process epochs in batches to reduce memory usage')
+parser = argparse.ArgumentParser(
+    description="Merge and align EEG and ECG epochs, replicate for balancing, "
+                "and save for DL."
+)
+parser.add_argument(
+    '--base_path',
+    required=True,
+    help="Root folder containing the '*-clean-epo.fif' files."
+)
+parser.add_argument(
+    '--outdir',
+    default='dl_ready_aligned_no_aug',
+    help="Output directory for .npy files and metadata."
+)
+parser.add_argument(
+    '--ratio',
+    type=float,
+    default=1.0,
+    help="Target ratio for replicating minority classes relative to majority "
+         "(e.g., 1.0 attempts to balance)."
+)
+parser.add_argument(
+    '--no_ecg',
+    action='store_true',
+    help="Ignore ECG modality; Xeeg will be EEG, Xecg will be zeros."
+)
 args = parser.parse_args()
 
 EPOCH_TYPES = ['preictal', 'ictal', 'onset', 'non_seizure']
-MINORITY = ['preictal', 'ictal', 'onset']
-
-eos_path = lambda typ: os.path.join(args.base, f"{typ}_epochs-clean-epo.fif")
-ecg_path = lambda typ: os.path.join(args.base, f"{typ}_ecg-clean-epo.fif")
-
-# Function to Extract Epoch Identifiers
-def get_epoch_id(epoch, typ, i):
-    return f"{typ}_{i}"
+MINORITY_CLASSES = ['preictal', 'ictal', 'onset']
+MAJORITY_CLASS = 'non_seizure'
 
 
-def aug_eeg(x, sf):
-    # x shape C×T
-    # 1/f noise (optimized)
-    freqs = np.fft.rfftfreq(x.shape[1], 1 / sf)
-    amp = 1 / np.maximum(freqs, 0.1)
-    noise_shape = x.shape
-
-    # Generate noise directly with amplitude
-    noise = np.random.randn(*noise_shape).astype('float32')
-    noise_fft = np.fft.rfft(noise)
-    noise_fft *= amp
-    noise = np.fft.irfft(noise_fft, n=noise_shape[1])
-
-    x = x + 3e-6 * noise
-
-    # time-shift (in-place)
-    shift = np.random.randint(0, x.shape[1])
-    x = np.roll(x, shift, axis=1)
-
-    # channel dropout
-    if np.random.rand() < 0.1:
-        x[np.random.randint(x.shape[0])] = 0
-
-    # polarity flip
-    if np.random.rand() < 0.5:
-        x *= -1
-
-    return x
-
-def aug_ecg(ecg, sf, target_len=2561):
-    t = np.arange(ecg.size) / sf
-    # Add sine wave directly instead of creating temporary arrays
-    phase = 2 * np.pi * np.random.rand()
-    ecg = ecg + 0.05 * np.sin(2 * np.pi * 0.15 * t + phase)
-
-    # More efficient resampling
-    factor = np.random.uniform(0.97, 1.03)
-    resampled_ecg = mne.filter.resample(ecg, int(ecg.size * factor), n_jobs=1)
-
-    # Handle target length
-    if resampled_ecg.size > target_len:
-        ecg = resampled_ecg[:target_len]
-    elif resampled_ecg.size < target_len:
-        ecg = np.pad(resampled_ecg, (0, target_len - resampled_ecg.size), 'constant')
-    else:
-        ecg = resampled_ecg
-
-    # Add noise and scale
-    std_ecg = np.std(ecg)
-    ecg += np.random.normal(0, 0.01 * std_ecg, size=ecg.shape)
-    ecg *= np.random.uniform(0.8, 1.2)
-
-    return ecg.reshape(1, -1)
-
-# Generate dummy ECG data when real data is unavailable
-def generate_dummy_ecg(target_len=2561):
-    # Create a simple placeholder ECG with some noise
-    dummy = np.zeros((1, target_len), dtype='float32')
-    # Add very small random noise to avoid all-zero data
-    dummy += np.random.normal(0, 1e-5, size=dummy.shape)
-    return dummy
+def eeg_fif_path(typ):
+    """Constructs path to EEG clean epoch FIF file."""
+    return os.path.join(args.base_path, f"{typ}_epochs-clean-epo.fif")
 
 
-def process_in_batches(output_dir, label_map, counts, target_per_min, major):
-    # Initialize output arrays and metadata
-    Xeeg_file = os.path.join(output_dir, 'Xeeg.npy')
-    Xecg_file = os.path.join(output_dir, 'Xecg.npy')
-    y_file = os.path.join(output_dir, 'y.npy')
-    meta_file = os.path.join(output_dir, 'meta.csv')
+def ecg_fif_path(typ):
+    """Constructs path to ECG clean epoch FIF file."""
+    return os.path.join(args.base_path, f"{typ}_ecg-clean-epo.fif")
 
-    all_Xeeg = []
-    all_Xecg = []
-    all_y = []
-    meta_rows = []
 
-    print("\n--- Processing Epoch Types ---")
-    for typ in EPOCH_TYPES:
-        if counts[typ] == 0:
-            print(f" - Skipping {typ}: No epochs found.")
-            continue
+def aug_eeg(x_eeg_single_epoch, sf):
+    """
+    Returns a copy of the EEG epoch. Transformative augmentations removed(atm).
+    """
+    return x_eeg_single_epoch.copy()
 
-        print(f" - Processing {typ} epochs:")
-        start_time = time.time()
 
-        eeg_info = mne.read_epochs(eos_path(typ), preload=False)
-        sf = eeg_info.info['sfreq']
-        n_orig = len(eeg_info)
-        target_count = major if typ == 'non_seizure' else target_per_min
-        rep_factor = int(np.ceil(target_count / n_orig)) if n_orig > 0 else 1
+def aug_ecg_waveform(x_ecg_single_epoch, sf):
+    """
+    Returns a copy of the ECG epoch waveform.
+    """
+    return x_ecg_single_epoch.copy()
 
-        batch_size = min(args.batch_size, n_orig)
-
-        for batch_start in range(0, n_orig, batch_size):
-            batch_end = min(batch_start + batch_size, n_orig)
-            batch_indices = list(range(batch_start, batch_end))
-
-            try:
-                eeg_batch = mne.read_epochs(eos_path(typ), preload=True)[batch_indices]
-            except Exception as e:
-                print(f" - Error loading EEG batch: {e}")
-                continue
-
-            has_ecg = not args.no_ecg and os.path.exists(ecg_path(typ))
-            ecg_batch = None
-            if has_ecg:
-                try:
-                    ecg_batch = mne.read_epochs(ecg_path(typ), preload=True)[batch_indices]
-                except Exception as e:
-                    print(f" - Error loading ECG batch: {e}")
-
-            for i in tqdm(range(len(eeg_batch)), desc=f" - Batch {batch_start//batch_size+1}", leave=False):
-                for r in range(rep_factor):
-                    if len(all_y) >= target_count:
-                        break
-
-                    eeg = eeg_batch[i].get_data().squeeze()
-
-                    ecg = None
-                    if has_ecg and ecg_batch is not None and i < len(ecg_batch):
-                        ecg = ecg_batch[i].get_data().squeeze()
-
-                    if typ in MINORITY:
-                        eeg = aug_eeg(eeg, sf)
-                        if ecg is not None:
-                            ecg = aug_ecg(ecg, sf)
-
-                    all_Xeeg.append(eeg)
-                    if not args.no_ecg:
-                        if ecg is not None:
-                            all_Xecg.append(aug_ecg(ecg, sf) if ecg.ndim == 1 else ecg)
-                        else:
-                            all_Xecg.append(generate_dummy_ecg())
-                    else:
-                        all_Xecg.append(np.zeros((1, 2561), dtype='float32'))
-
-                    all_y.append(label_map[typ])
-                    meta_rows.append({
-                        "epoch_type": typ,
-                        "orig_idx": batch_start + i,
-                        "replication": r + 1,
-                        "file": eeg_info.filename,
-                        "has_ecg": ecg is not None
-                    })
-                if len(all_y) >= target_count:
-                    break
-
-            del eeg_batch
-            if ecg_batch is not None:
-                del ecg_batch
-            gc.collect()
-
-        print(f" - Finished processing {typ} epochs. Total Time: {time.time() - start_time:.2f}s\n")
-
-    np.save(Xeeg_file, np.array(all_Xeeg, dtype='float32'), allow_pickle=False)
-    np.save(Xecg_file, np.array(all_Xecg, dtype='float32'), allow_pickle=False)
-    np.save(y_file, np.array(all_y, dtype='int64'), allow_pickle=False)
-    pd.DataFrame(meta_rows).to_csv(meta_file, index=False)
-
-    return len(all_y)
 
 def main():
-    # Create output directory
-    output_dir = os.path.join(args.base, args.outdir)
+    """
+    Main function to load, align, replicate for balancing,
+    and save EEG/ECG epoch data.
+    """
+    output_dir = os.path.join(args.base_path, args.outdir)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Map labels to indices
-    label_map = {k: i for i, k in enumerate(EPOCH_TYPES)}
+    logging.basicConfig(
+        filename=os.path.join(output_dir, "merge_log.log"),
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        filemode='w'
+    )
+    logger = logging.getLogger(__name__)
 
-    # First pass: count epochs per class
-    counts = {}
-    print("--- Counting Epochs ---")
-    for typ in EPOCH_TYPES:
-        print(f" - Counting {typ} epochs...", end=" ", flush=True)
-        start_time = time.time()
-        eeg_file_path = eos_path(typ)
-        if os.path.exists(eeg_file_path):
+    label_map = {name: i for i, name in enumerate(EPOCH_TYPES)}
+
+    all_aligned_eeg_data = []
+    all_aligned_ecg_data = []
+    all_labels = []
+    all_aligned_metadata = []
+
+    logger.info("--- Loading, Aligning, and Replicating Epochs ---")
+
+    sf = None
+    seq_len_eeg, seq_len_ecg = None, None
+    n_channels_eeg, n_channels_ecg = None, 1
+
+    for typ_for_info in EPOCH_TYPES:
+        eeg_fp = eeg_fif_path(typ_for_info)
+        if os.path.exists(eeg_fp):
             try:
-                epochs = mne.read_epochs(eeg_file_path, preload=False)
-                counts[typ] = len(epochs)
+                temp_eeg = mne.read_epochs(eeg_fp, preload=False,
+                                           verbose=False)
+                if len(temp_eeg.events) > 0:
+                    sf = temp_eeg.info['sfreq']
+                    _, n_channels_eeg, seq_len_eeg = temp_eeg.get_data(
+                        copy=False).shape
+                    if not args.no_ecg:
+                        ecg_fp = ecg_fif_path(typ_for_info)
+                        if os.path.exists(ecg_fp):
+                            temp_ecg = mne.read_epochs(
+                                ecg_fp, preload=False, verbose=False
+                            )
+                            if len(temp_ecg.events) > 0:
+                                _, n_channels_ecg, seq_len_ecg = \
+                                    temp_ecg.get_data(copy=False).shape
+                            else:
+                                seq_len_ecg = seq_len_eeg
+                    break
             except Exception as e:
-                print(f"\nError counting {typ} epochs: {e}")
-                counts[typ] = 0
-        else:
-            counts[typ] = 0
-        print(f"Count: {counts[typ]}, Time: {time.time() - start_time:.2f}s")
+                logger.error(f"Error reading info from {eeg_fp}: {e}")
+                continue
 
-    # Calculate target counts
-    major = counts['non_seizure']
-    target_per_min = int(major * args.ratio)
-    print("Target per minority class:", target_per_min)
+    if sf is None or seq_len_eeg is None:
+        logger.error("Could not determine sfreq or sequence length from "
+                     "preprocessed files. Exiting.")
+        return
 
-    # Process data in batches to manage memory
-    total_processed = process_in_batches(output_dir, label_map, counts, target_per_min, major)
+    logger.info(f"Determined sfreq: {sf}, EEG: {seq_len_eeg} samples, "
+                f"{n_channels_eeg} channels.")
+    if not args.no_ecg and seq_len_ecg:
+        logger.info(f"ECG: {seq_len_ecg} samples, {n_channels_ecg} channels.")
+    elif not args.no_ecg and not seq_len_ecg:
+        logger.warning("ECG sequence length not determined, use EEG length"
+                       " for dummy ECG if needed.")
+        seq_len_ecg = seq_len_eeg
 
-    print(f"\n--- Data Processing Complete: {total_processed} total samples ---")
+    original_counts = {}
+
+    for typ in EPOCH_TYPES:
+        logger.info(f"\nProcessing type: {typ}")
+        eeg_fp = eeg_fif_path(typ)
+        if not os.path.exists(eeg_fp):
+            logger.warning(f"EEG file not found for {typ}: {eeg_fp}. Skipping")
+            original_counts[typ] = 0
+            continue
+
+        try:
+            eeg_epochs = mne.read_epochs(eeg_fp, preload=True, verbose=False)
+        except Exception as e:
+            logger.error(f"Could not load EEG epochs for {typ} from {eeg_fp}: "
+                         f"{e}. Skipping.")
+            original_counts[typ] = 0
+            continue
+
+        if eeg_epochs.metadata is None or \
+           'unique_epoch_id' not in eeg_epochs.metadata.columns:
+            logger.error(f"EEG metadata missing 'unique_epoch_id' for {typ}. "
+                         "Cannot align. Skipping.")
+            original_counts[typ] = 0
+            del eeg_epochs
+            gc.collect()
+            continue
+
+        eeg_meta = eeg_epochs.metadata.copy()
+        eeg_data_arr = eeg_epochs.get_data(copy=True)
+        del eeg_epochs
+        gc.collect()
+
+        original_counts[typ] = len(eeg_meta)
+        logger.info(f"Loaded {len(eeg_meta)} EEG epochs for {typ}.")
+
+        ecg_meta, ecg_data_arr = None, None
+        if not args.no_ecg:
+            ecg_fp = ecg_fif_path(typ)
+            if not os.path.exists(ecg_fp):
+                logger.warning(f"ECG file not found for {typ}: {ecg_fp}.")
+            else:
+                try:
+                    ecg_epochs = mne.read_epochs(ecg_fp, preload=True,
+                                                 verbose=False)
+                    if len(ecg_epochs.events) == 0:
+                        logger.warning(f"ECG file {ecg_fp} for {typ} "
+                                       "contains no epochs.")
+                    elif ecg_epochs.metadata is None or 'unique_epoch_id' not in ecg_epochs.metadata.columns:
+                        logger.error(f"ECG metadata missing 'unique_epoch_id' "
+                                     f"for {typ}. Skipping ECG for this type.")
+                    else:
+                        ecg_meta = ecg_epochs.metadata.copy()
+                        ecg_data_arr = ecg_epochs.get_data(copy=True)
+                        logger.info(f"Loaded {len(ecg_meta)} ECG epochs for "
+                                    f"{typ}")
+                    del ecg_epochs
+                    gc.collect()
+                except Exception as e:
+                    logger.error(f"Could not load ECG epochs for {typ} from "
+                                 f"{ecg_fp}: {e}")
+
+        current_eeg_data = eeg_data_arr
+        current_meta = eeg_meta
+        _seq_len_for_dummy_ecg = seq_len_ecg if seq_len_ecg is not None else seq_len_eeg
+        current_ecg_data = np.zeros(
+            (len(current_eeg_data), n_channels_ecg, _seq_len_for_dummy_ecg),
+            dtype='float32'
+        )
+
+
+        if ecg_meta is not None and ecg_data_arr is not None:
+            ecg_feature_cols = [
+                col for col in ecg_meta.columns
+                if col.startswith('HR_') or col in [
+                    "RMSSD", "MeanNN", "SDNN", "MedianNN", "pNN50",
+                    "LF", "HF", "LFHF"
+                ]
+            ]
+            merged_meta = pd.merge(
+                eeg_meta,
+                ecg_meta[['unique_epoch_id'] + ecg_feature_cols],
+                on='unique_epoch_id',
+                how='inner'
+            )
+            logger.info(f"Aligned {len(merged_meta)} EEG/ECG epochs for {typ}")
+
+            if not merged_meta.empty:
+                eeg_meta_reindexed = eeg_meta.set_index('unique_epoch_id')
+                ecg_meta_reindexed = ecg_meta.set_index('unique_epoch_id')
+
+                try:
+                    valid_ids_in_merged = merged_meta['unique_epoch_id']
+                    eeg_indices_aligned = eeg_meta_reindexed.index.get_indexer(
+                        valid_ids_in_merged[
+                            valid_ids_in_merged.isin(eeg_meta_reindexed.index)
+                        ]
+                    )
+                    ecg_indices_aligned = ecg_meta_reindexed.index.get_indexer(
+                        valid_ids_in_merged[
+                            valid_ids_in_merged.isin(ecg_meta_reindexed.index)
+                        ]
+                    )
+
+                    eeg_indices_aligned = eeg_indices_aligned[
+                        eeg_indices_aligned != -1]
+                    ecg_indices_aligned = ecg_indices_aligned[
+                        ecg_indices_aligned != -1]
+
+                    min_len = min(len(eeg_indices_aligned),
+                                  len(ecg_indices_aligned))
+
+                    current_eeg_data = eeg_data_arr[
+                        eeg_indices_aligned[:min_len]]
+                    current_ecg_data = ecg_data_arr[
+                        ecg_indices_aligned[:min_len]]
+                    current_meta = merged_meta.iloc[:min_len].copy()
+
+                    if not (len(current_eeg_data) == len(current_ecg_data) ==
+                            len(current_meta)):
+                        logger.warning(
+                            f"Post-alignment length mismatch for {typ}. "
+                            "Reverting to EEG-only for this type."
+                        )
+                        current_eeg_data = eeg_data_arr
+                        current_meta = eeg_meta
+                        current_ecg_data = np.zeros(
+                            (len(current_eeg_data), n_channels_ecg,
+                             _seq_len_for_dummy_ecg), dtype='float32'
+                        )
+                except KeyError as e:
+                    logger.error(f"KeyError during alignment for {typ}: {e}. "
+                                 "Using EEG-only for this type.")
+                    current_eeg_data = eeg_data_arr
+                    current_meta = eeg_meta
+                    current_ecg_data = np.zeros(
+                        (len(current_eeg_data), n_channels_ecg,
+                         _seq_len_for_dummy_ecg), dtype='float32'
+                    )
+            else:
+                logger.info(f"No epochs aligned for {typ}. Using EEG-only.")
+                current_eeg_data = eeg_data_arr
+                current_meta = eeg_meta
+                current_ecg_data = np.zeros(
+                    (len(current_eeg_data), n_channels_ecg,
+                     _seq_len_for_dummy_ecg), dtype='float32'
+                )
+        elif not args.no_ecg:
+            logger.info(f"Proceeding with EEG-only for type {typ} due to "
+                        "missing/unalignable ECG data.")
+
+        num_current_samples = len(current_meta)
+        if num_current_samples == 0:
+            logger.info(f"No samples for {typ} to process after alignment.")
+            continue
+
+        replication_factor = 1
+        if typ in MINORITY_CLASSES:
+            majority_count = original_counts.get(MAJORITY_CLASS, 0)
+            if majority_count > 0 and num_current_samples > 0:
+                target_count_minority = int(majority_count * args.ratio)
+                if target_count_minority > num_current_samples:
+                    replication_factor = int(
+                        np.ceil(target_count_minority / num_current_samples)
+                    )
+                logger.info(
+                    f"Balancing {typ}: Have {num_current_samples}, "
+                    f"target ~{target_count_minority} (ratio {args.ratio} "
+                    f"of majority {majority_count}). "
+                    f"Replication factor: {replication_factor}."
+                )
+
+        for i in range(num_current_samples):
+            for r_idx in range(replication_factor):
+                eeg_sample_to_add = current_eeg_data[i]
+                ecg_sample_to_add = current_ecg_data[i]
+                is_augmented_flag = False
+
+                if r_idx > 0:
+                    is_augmented_flag = True
+                    # Augmentation functions now just return copies
+                    eeg_sample_to_add = aug_eeg(current_eeg_data[i], sf)
+                    if not args.no_ecg and current_ecg_data[i].size > 0:
+                        ecg_sample_to_add = aug_ecg_waveform(
+                            current_ecg_data[i], sf
+                        )
+
+                all_aligned_eeg_data.append(eeg_sample_to_add)
+                all_aligned_ecg_data.append(ecg_sample_to_add)
+                all_labels.append(label_map[typ])
+
+                meta_row = current_meta.iloc[i].to_dict()
+                meta_row['is_augmented'] = is_augmented_flag
+                meta_row['replication_index'] = r_idx
+                all_aligned_metadata.append(meta_row)
+
+        del eeg_data_arr
+        if ecg_data_arr is not None:
+            del ecg_data_arr
+        gc.collect()
+
+    if not all_labels:
+        logger.error("No data was processed or aligned. Exiting.")
+        return
+
+    indices = np.arange(len(all_labels))
+    np.random.shuffle(indices)
+
+    Xeeg_final = np.array(all_aligned_eeg_data, dtype='float32')[indices]
+    Xecg_final = np.array(all_aligned_ecg_data, dtype='float32')[indices]
+    y_final = np.array(all_labels, dtype='int64')[indices]
+    meta_final_df = pd.DataFrame(
+        all_aligned_metadata).iloc[indices].reset_index(drop=True)
+
+    logger.info(f"\nTotal samples generated: {len(y_final)}")
+    for i, name in enumerate(EPOCH_TYPES):
+        logger.info(f"Class {name} (label {i}): {np.sum(y_final == i)} "
+                    f"samples")
+
+    np.save(os.path.join(output_dir, 'Xeeg.npy'), Xeeg_final)
+    np.save(os.path.join(output_dir, 'Xecg.npy'), Xecg_final)
+    np.save(os.path.join(output_dir, 'y.npy'), y_final)
+    meta_final_df.to_csv(
+        os.path.join(output_dir, 'meta_aligned.csv'), index=False
+    )
+
+    logger.info(f"\nData saved to directory: {output_dir}")
+    logger.info("Xeeg.npy, Xecg.npy, y.npy, meta_aligned.csv created.")
+
 
 if __name__ == "__main__":
-    # Set MNE to be more memory efficient
-    mne.set_log_level('WARNING')  # Reduce log verbosity
-
-    # Run the main function
     main()

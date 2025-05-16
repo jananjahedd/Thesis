@@ -49,7 +49,7 @@ def verify_epoch_time_alignment(eeg_path, ecg_path):
 
 if __name__ == '__main__':
     # Example Usage
-    base_path = "/scratch/s5107318/BP/ds005873"  # Replace with your base path
+    base_path = "/Users/jananjahed/Desktop/BP/ds005873"  # Replace with your base path
 
     for epoch_type in ['preictal', 'ictal', 'onset', 'non_seizure']:
         eeg_file = os.path.join(base_path, f"{epoch_type}_epochs-clean-epo.fif")
