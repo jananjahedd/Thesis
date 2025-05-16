@@ -11,11 +11,9 @@
 #SBATCH --output=ecg_preprocessing_%j.out
 #SBATCH --error=ecg_preprocessing_%j.err
 
-# Load modules
 module load Anaconda3
 conda activate ecg-env
 
-# Run your script
 python /scratch/s5107318/BP/Data_preprocessing/ECG/ECG_preprocessing.py
 
 
