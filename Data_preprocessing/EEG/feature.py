@@ -7,7 +7,6 @@ from scipy import stats
 from mne.time_frequency import psd_array_welch
 
 base_path   = "/Users/jananjahed/Desktop/Bachelor's project/ds005873"
-# Load the preprocessed EEG epochs
 for epoch_type in ['preictal', 'ictal', 'onset', 'non_seizure']:
     eeg_file = os.path.join(base_path, f"{epoch_type}_epochs-clean-epo.fif")
     if not os.path.exists(eeg_file):
@@ -16,17 +15,14 @@ for epoch_type in ['preictal', 'ictal', 'onset', 'non_seizure']:
     epochs = mne.read_epochs(eeg_file, preload=True)
     features = []
 
-    # Extract features for each epoch
     for i in tqdm(range(len(epochs)), desc=f"Processing {epoch_type}"):
         epoch = epochs[i]
-        data = epoch.get_data()[0]  # Get data for the first (and only) epoch
+        data = epoch.get_data()[0]
         times = epoch.times
 
-        # Get metadata
         meta = {
             'epoch_type': epoch_type,
             'epoch_idx': i,
-            # Extract filename and onset from metadata if available
             'file': epochs.metadata['file'][i] if hasattr(epochs, 'metadata') and epochs.metadata is not None and 'file' in epochs.metadata else '',
             'onset': epochs.metadata['onset'][i] if hasattr(epochs, 'metadata') and epochs.metadata is not None and 'onset' in epochs.metadata else 0,
         }
@@ -95,7 +91,6 @@ for epoch_type in ['preictal', 'ictal', 'onset', 'non_seizure']:
 
         features.append(meta)
 
-    # Save features to CSV
     df = pd.DataFrame(features)
     df.to_csv(os.path.join(base_path, f"{epoch_type}_eeg-features.csv"), index=False)
     print(f"Saved {len(df)} records to {epoch_type}_eeg-features.csv")
