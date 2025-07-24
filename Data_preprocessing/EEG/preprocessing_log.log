@@ -1,6 +1,0 @@
-2025-05-16 17:43:06,698 - INFO - Starting EEG preprocessing. Base path: /Users/jananjahed/Desktop/BP/ds005873, Target sfreq: 256 Hz.
-2025-05-16 17:43:06,758 - INFO - Found 2853 EDF files to process.
-2025-05-16 18:25:53,276 - INFO - Starting EEG preprocessing. Base path: /Users/jananjahed/Desktop/BP/ds005873, Target sfreq: 256 Hz.
-2025-05-16 18:25:53,304 - INFO - Found 2853 EDF files to process.
-2025-05-16 19:22:12,176 - INFO - Starting EEG preprocessing. Base path: /Users/jananjahed/Desktop/BP/ds005873, Target sfreq: 256 Hz.
-2025-05-16 19:22:12,256 - INFO - Found 2853 EDF files to process.
