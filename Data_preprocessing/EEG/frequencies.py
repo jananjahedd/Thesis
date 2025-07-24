@@ -48,7 +48,7 @@ for edf_path in all_edf_files:
     # Process seizure events
     seiz_df = events_df[events_df['eventType'].str.startswith('sz_', na=False)]
     if not seiz_df.empty:
-        seiz_df['onset_end'] = seiz_df['onset'] + seiz_df['duration']  # Assuming 'duration' column exists
+        seiz_df['onset_end'] = seiz_df['onset'] + seiz_df['duration']
         seizure_durations.extend(seiz_df['duration'].values)
 
         # Count seizures under 20s
@@ -57,6 +57,5 @@ for edf_path in all_edf_files:
 # Calculate minimum seizure duration
 min_seizure_duration = min(seizure_durations) if seizure_durations else None
 
-# Log the results
 logger.info(f"Minimum seizure duration: {min_seizure_duration}s")
 logger.info(f"Seizures under 20s: {seizures_under_20s} out of {len(seizure_durations)} seizures.")
